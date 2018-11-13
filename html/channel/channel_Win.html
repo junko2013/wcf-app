@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <title>title</title>
+      <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+      <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+      <style>
+
+      </style>
+  </head>
+  <body>
+
+    <header class="aui-bar aui-bar-nav">
+        <a class="aui-pull-left aui-btn" onclick="back()" tapmode>
+            <span class="aui-iconfont aui-icon-left"></span>
+            <span>返回</span>
+        </a>
+        <div class="aui-title" id="title" tapmode onclick="api.closeToWin({name:'wrap'})">点击我返回首页</div>
+        <a class="aui-pull-right aui-btn"  onclick="openShare()" tapmode>
+            <span class="aui-iconfont aui-icon-share"></span>
+        </a>
+    </header>
+  </body>
+  <script type="text/javascript" src="../../script/api.js"></script>
+  <script type="text/javascript" src="./inject.js"></script>
+  <script type="text/javascript">
+      var wx;
+      var type;//渠道名称
+      apiready = function(){
+           $api.fixStatusBar($api.dom("header"));
+           wx = api.require('wx');
+
+           type=api.pageParam.type;
+           type &&($api.html($api.dom("#title"),type));
+           listenerPlay();
+
+           switch (type) {
+              case "爱奇艺":
+                openChennel("https://www.iqiyi.com/");
+                break;
+              case "腾讯视频":
+                openChennel("https://m.v.qq.com/index.html");
+                break;
+              case "芒果TV":
+                openChennel("https://m.mgtv.com/channel/home/");
+                break;
+              case "优酷":
+                openChennel("https://www.youku.com/");
+                break;
+              case "1905Vip影院":
+                openChennel("http://vip.1905.com/");
+                break;
+              case "乐视视频":
+                openChennel("http://m.le.com/");
+                break;
+              case "搜狐视频":
+                openChennel("https://m.tv.sohu.com/film");
+                break;
+              case "咪咕视频":
+                openChennel("http://m.miguvideo.com/mobiletv.jsp");
+                break;
+              case "电视台直播":
+                openChennel("http://m.miguvideo.com/wap/resource/migu/live/live-list.jsp");
+                break;
+              case "搜狐视频":
+                openChennel("https://m.tv.sohu.com/");
+                break;
+              case "PPTV":
+                openChennel("http://www.pptv.com/?f=pptv");
+                break;
+              case "华数TV":
+                openChennel("https://www.wasu.cn/wap/");
+                break;
+             default:
+                 api.pageParam.url && (openChennel(api.pageParam.url))
+
+           }
+
+
+
+
+
+
+
+
+
+      };
+
+      function back(){
+        api.historyBack({
+            frameName: 'chennel'
+        }, function(ret, err) {
+            if (!ret.status) {
+                api.closeWin();
+            }
+        });
+      }
+
+      //监听点击播放事件
+      function listenerPlay(){
+          //播放事件
+          api.addEventListener({
+              name: 'play'
+          }, function(ret, err){
+              if( ret ){
+                 $api.checkVipOpenPlayer({
+                   poster:ret.value.poster,
+                   title:ret.value.title,
+                   pageUrl:ret.value.pageUrl,
+                   platform:ret.value.platform
+                 });
+              }
+          });
+      }
+
+
+
+      function openShare(){
+         $api.openShare(function(name){
+            switch (name) {
+              case "微信":
+                wechatShare();
+                break;
+              case "QQ好友":
+                qqShare();
+                break;
+              default:
+
+            }
+         });
+      }
+
+     //QQ分享
+     function qqShare(){
+       alert(11)
+     }
+
+     //微信分享
+     function wechatShare(){
+        $api.checkInStallWeChat(function(){
+          alert(222)
+        })
+     }
+
+
+    //打开第三方视频
+    function openChennel(url){
+      api.openFrame({
+          name: 'chennel',
+          url:url,
+          rect: {
+              x: 0,
+              y: $api.offset($api.dom("header")).h,
+              w: "auto",
+              h: "auto"
+          },
+          useWKWebView:true,
+          reload:true,
+          progress:{
+            title:"加载中..."
+          }
+      });
+      api.setFrameClient({
+          frameName:'chennel'
+      }, function(ret, err){
+          function inject(){
+            switch (type) {
+               case "爱奇艺":
+                 iqiyiInject(ret.progress);
+                 break;
+               case "腾讯视频":
+                 txInject(ret.progress);
+                 break;
+               case "芒果TV":
+                 mangoInject(ret.progress);
+                 break;
+               case "优酷":
+                 ykInject(ret.progress);
+                 break;
+               case "搜狐视频":
+                 souhuInject(ret.progress);
+                 break;
+               case "PPTV":
+                 pptvInject(ret.progress);
+                 break;
+               case "咪咕视频" :
+                 miGuInject(ret.progress);
+                 break;
+               case "1905Vip影院":
+                 yijiulinwuInject(ret.progress);
+                 break;
+               case "华数TV":
+                 huaShuInject(ret.progress);
+                 break;
+              case "电视台直播":    //这是咪咕的电视台
+                 mgInject(ret.progress);
+                 break;
+              case "乐视视频":
+                  leshiInject(ret.progress);
+                  break;
+              default:
+                // console.log("没有平台")
+            }
+          }
+          if(ret.state==1 && ret.progress>50){
+              inject();
+          }
+      });
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+  </script>
+  </html>

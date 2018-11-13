@@ -1,0 +1,183 @@
+z<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <title>登录</title>
+      <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+      <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+      <style>
+          .input{
+              display: block !important;
+              margin:0 auto 0.56rem auto !important;
+              width: 80vw !important;
+              height:3rem !important;
+          }
+          #wrap{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+          }
+          #save{
+            width:80vw;
+            margin:1rem auto 0 auto;
+          }
+          form{
+            background: #fff;
+          }
+          .input:first-child{
+            margin-top:5vw !important;
+          }
+          .codeWrap{
+            display:flex;
+            width: 80vw;
+            margin:0 auto;
+            align-items: flex-end;
+          }
+          #code{
+            flex:1;
+          }
+          #send{
+            width:5rem;
+            font-size:0.6rem;
+            margin-bottom:0.56rem;
+          }
+      </style>
+  </head>
+  <body>
+      <div id="wrap">
+        <header class="aui-bar aui-bar-nav">绑定手机号和密码</header>
+        <form action="">
+            <input id="phone" class="input aui-border-b" type="number" placeholder="请输入您的手机号" maxlength="11">
+            <div class="codeWrap">
+               <input id="code" class="input aui-border-b" type="number" placeholder="请输入验证码" maxlength="8">
+               <div class="aui-btn aui-btn-info" id="send" tapmode onclick="send()">发送验证码</div>
+            </div>
+            <input id="password" class="input aui-border-b" type="text" placeholder="请输入登录密码">
+            <div id="save" tapmode onclick="bind()"><p class="aui-btn aui-btn-info aui-btn-block">绑定</p></div>
+        </form>
+      </div>
+  </body>
+  <script type="text/javascript" src="../../script/api.js"></script>
+  <script type="text/javascript">
+      var maxCode=60;
+      var codeNum=maxCode;
+      var isSend=true;//发送验证码
+      apiready = function(){
+        $api.fixStatusBar($api.dom("header"));
+
+
+
+      };
+
+
+      function bind(){
+           var phone=$api.trim($api.val($api.dom("#phone")));
+           var code=$api.trim($api.val($api.dom("#code")));
+           var password=$api.trim($api.val($api.dom("#password")));
+           if(!phone || !code || !password){
+              api.toast({
+                  msg: '请输入有效值',
+                  duration: 2000,
+                  location: 'middle'
+              });
+              return false;
+           }
+           //手机校验
+           if(!$api.regPhone(phone)){
+             return false;
+           }
+           //密码校验
+           if(!$api.regPassword(password)){
+             return false;
+           }
+           //登录
+           $api.openLoading();
+           api.ajax({
+               url: $api.getHttp()+"binding/doBinding?mobile="+phone+"&telcode="+code+"&password="+password,
+               method: 'get',
+               headers:$api.getAjaxHeaders()
+           },function(ret, err){
+               if (ret) {
+                   if(ret.success){
+                        $api.setToken(ret.data);
+                        api.sendEvent({
+                            name: 'logined',
+                        });
+                        api.closeToWin({
+                          name:"wrap"
+                        });
+                   }else{
+                     api.toast({
+                         msg: ret.msg,
+                         duration: 2000,
+                         location: 'middle'
+                     });
+                   }
+               } else {
+                   $api.toastNetWorkErr();
+
+               }
+               $api.closeLoading();
+           });
+
+
+      }
+
+
+
+
+
+
+      function send(){
+        //校验手机号
+        var phone=$api.trim($api.val($api.dom("#phone")));
+        //手机校验
+        if(!$api.regPhone(phone)){
+          return false;
+        }
+        //倒计时
+        if(isSend){
+          $api.openLoading();
+           isSend=false;
+           api.ajax({
+               url: $api.getHttp()+"binding/sendSmsCode?mobile="+phone,
+               method: 'get',
+               headers:{
+                 userToken:$api.getToken()
+               }
+           },function(ret, err){
+               $api.closeLoading();
+               if (ret) {
+                 if(ret.success){
+                   $api.html($api.dom("#send"),codeNum);
+                   $api.removeCls($api.dom("#send"), 'aui-btn-info');
+                   var timer=setInterval(function(){
+                     $api.html($api.dom("#send"),--codeNum);
+                     if(codeNum<0){
+                        clearInterval(timer);
+                        codeNum=maxCode;
+                        isSend=true;
+                        $api.html($api.dom("#send"),"发送验证码");
+                        $api.addCls($api.dom("#send"), 'aui-btn-info');
+                     }
+                   },1000);
+                 }else{
+                   isSend=true;
+                   api.toast({
+                       msg: ret.msg,
+                       duration: 2000,
+                       location: 'middle'
+                   });
+                 }
+               } else {
+                   isSend=true;
+                   $api.toastNetWorkErr();
+               }
+           });
+        }
+      }
+  </script>
+  </html>

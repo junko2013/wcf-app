@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../script/swiper/swiper.min.css" />
+    <style>
+        #channels .aui-col-xs-3 {
+            text-align: center;
+            border: 1px solid #f5f5f5
+        }
+
+        #channels .aui-col-xs-3 img {
+            margin: 0 auto;
+            width: 40px;
+            height: 40px
+        }
+
+        #swiper {
+            height: 50vw;
+        }
+
+        #swiper img {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #swiper .swiper-slide{
+          position: relative;
+        }
+        #swiper .swiper-slide .mark{
+           position: absolute;
+           top:0;
+           right:0;
+           width:2rem;
+           height:0.95rem;
+           line-height: 0.95rem;
+           text-align: center;
+           background: orange;
+           color:#fff;
+           font-size: 0.6rem;
+           border-radius:0.2rem;
+        }
+    </style>
+</head>
+
+<body>
+      <div id="wrap">
+              <!--  轮播-->
+              <div class="swiper-container" id="swiper">
+                  <div class="swiper-wrapper">
+                      <div class="swiper-slide" v-for="(i,k) in list" :key="k">
+                          <img :src="i.cover" alt="">
+                          <span class="mark">{{i.mark}}</span>
+                      </div>
+                  </div>
+              </div>
+              <!-- 渠道 -->
+              <section class="aui-grid" id="channels">
+                  <div class="aui-row">
+                      <div class="aui-col-xs-3" onclick="jumpChennel('优酷')" tapmode>
+                          <img src="../../image/index/youku.png" class="aui-iconfont">
+                          <div class="aui-grid-label">优酷</div>
+                      </div>
+                      <div class="aui-col-xs-3" onclick="jumpChennel('腾讯视频')" tapmode>
+                          <img src="../../image/index/tengxun.png" class="aui-iconfont">
+                          <div class="aui-grid-label">腾讯视频</div>
+                      </div>
+                      <div class="aui-col-xs-3" onclick="jumpChennel('爱奇艺')" tapmode>
+                          <img src="../../image/index/iqiyi.png" class="aui-iconfont">
+                          <div class="aui-grid-label">爱奇艺</div>
+                      </div>
+                      <div class="aui-col-xs-3" onclick="jumpChennel('芒果TV')" tapmode>
+                          <img src="../../image/index/mangguotv.png" class="aui-iconfont">
+                          <div class="aui-grid-label">芒果TV</div>
+                      </div>
+                      <div class="aui-col-xs-3" onclick="jumpChennel('搜狐视频')">
+                          <img src="../../image/index/souhu.png" class="aui-iconfont">
+                          <div class="aui-grid-label">搜狐视频</div>
+                      </div>
+                      <div class="aui-col-xs-3" onclick="jumpChennel('PPTV')">
+                          <img src="../../image/index/pptv.png" class="aui-iconfont">
+                          <div class="aui-grid-label">PPTV</div>
+                      </div>
+                      <div class="aui-col-xs-3" onclick="jumpChennel('咪咕视频')" tapmode>
+                          <img src="../../image/index/migu.png" class="aui-iconfont">
+                          <div class="aui-grid-label">咪咕视频</div>
+                      </div>
+                      <div class="aui-col-xs-3" onclick="jumpChennel('1905Vip影院')" tapmode>
+                          <img src="../../image/index/1905.jpg" class="aui-iconfont">
+                          <div class="aui-grid-label">1905Vip影院</div>
+                      </div>
+                      <div class="aui-col-xs-3" onclick="jumpChennel('乐视视频')">
+                          <img src="../../image/index/leshi.png" class="aui-iconfont">
+                          <div class="aui-grid-label">乐视视频</div>
+                      </div>
+                      <div class="aui-col-xs-3" onclick="jumpChennel('华数TV')">
+                          <img src="../../image/index/huashu.png" class="aui-iconfont">
+                          <div class="aui-grid-label">华数TV</div>
+                      </div>
+                      <div class="aui-col-xs-3" onclick="jumpChennel('电视台直播')">
+                          <img src="../../image/index/zhibo.png" class="aui-iconfont">
+                          <div class="aui-grid-label">电视台直播</div>
+                      </div>
+                  </div>
+              </section>
+      </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/swiper/swiper.min.js">
+</script>
+<script type="text/javascript">
+    var browser;
+    var vue;
+    apiready = function() {
+        browser = api.require("webBrowser");
+        vue=new Vue({
+              el:"#wrap",
+              data:{
+                list:[]
+              },
+              created:function(){
+                var self=this;
+                api.setRefreshHeaderInfo({
+                    visible: true,
+                    bgColor: '#fff',
+                    textColor: '#000',
+                    textDown: '下拉刷新...',
+                    textUp: '松开刷新...',
+                    showTime: true
+                }, function(ret, err){
+                   self.getSwiper(function(){
+                      api.refreshHeaderLoadDone();
+                   });
+                });
+                this.getSwiper();
+              },
+              methods:{
+                 getSwiper:function(callback){
+                   var self=this;
+                    api.ajax({
+                        url: $api.getHttp()+'news/index',
+                        method: 'get',
+                    },function(ret, err){
+                        if (ret) {
+                             if(ret.success){
+                               self.list=ret.data;
+                               self.$nextTick(function(){
+                                  self.initSwiper();
+                                  callback && callback();
+                               });
+                             }else{
+                               callback && callback();
+                             }
+                        } else {
+                           $api.toastNetWorkErr();
+                           callback && callback();
+                        }
+                    });
+
+                 },
+                 initSwiper:function(){
+                   var self=this;
+                   this.mySwiper = new Swiper('#swiper', {
+                        autoplay: true, //可选选项，自动滑动
+                        loop: true,
+                        on: {
+                          tap: function () {
+                            api.openWin({
+                                name: 'live_Win',
+                                url: '../live/live_Win.html',
+                                pageParam: {
+                                    url: self.list[this.realIndex].href,
+                                }
+                            });
+                          },
+                        },
+                    });
+                 },//initSwiper end
+
+              }
+        });
+    };
+
+    //跳转到webBrowser
+    function jumpChennel(type) {
+        api.openWin({
+            name: 'channel_win',
+            url: '../channel/channel_Win.html',
+            pageParam: {
+                type: type
+            }
+        });
+    }
+</script>
+
+</html>

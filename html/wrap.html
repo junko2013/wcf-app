@@ -1,0 +1,291 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>私人影院</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <style type="text/css">
+        /*底部*/
+        footer{
+          border-top:1px solid #f5f5f5;
+        }
+        .tabIcon{
+          width: 1.05rem;
+          height: 1.05rem;
+          display: block;
+          margin:0 auto;
+          background-size: 100% 100%;
+        }
+        .movie>.tabIcon{
+          background-image: url("../image/index/movie.png");
+        }
+        .movie.aui-active>.tabIcon{
+          background-image: url("../image/index/movie_active.png");
+        }
+        .live>.tabIcon{
+          background-image: url("../image/index/live.png");
+        }
+        .live.aui-active>.tabIcon{
+          background-image: url("../image/index/live_active.png");
+        }
+        .qp>.tabIcon{
+          background-image: url("../image/index/qp.png");
+        }
+        .qp.aui-active>.tabIcon{
+          background-image: url("../image/index/qp_active.png");
+        }
+        .my>.tabIcon{
+          background-image: url("../image/index/my.png");
+        }
+        .my.aui-active>.tabIcon{
+          background-image: url("../image/index/my_active.png");
+        }
+        .aui-bar-tab{
+          color:#999 !important;
+        }
+        .aui-bar-tab .aui-active{
+          color:#231d41 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="aui-bar aui-bar-nav">木蚁视界</header>
+    <footer class="aui-bar aui-bar-tab">
+        <div class="movie aui-bar-tab-item aui-active" tapmode onclick="changeTabBar(0)">
+            <i class="tabIcon"></i>
+            <div class="aui-bar-tab-label">影视</div>
+        </div>
+        <div class="live aui-bar-tab-item" tapmode onclick="changeTabBar(1)">
+            <i class="tabIcon"></i>
+            <div class="aui-bar-tab-label">直播</div>
+        </div>
+        <div class="qp aui-bar-tab-item" tapmode onclick="changeTabBar(2)">
+            <i class="tabIcon"></i>
+            <div class="aui-bar-tab-label">抢片</div>
+        </div>
+        <div id="my" class="my aui-bar-tab-item" tapmode onclick="changeTabBar(3)">
+            <i class="tabIcon"></i>
+            <div class="aui-bar-tab-label">我的</div>
+        </div>
+    </footer>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    var UIScrollPicture;
+
+    apiready = function() {
+        UIScrollPicture = api.require('UIScrollPicture');
+        //兼容X以上
+        $api.fixStatusBar($api.dom("header"));
+        $api.fixTabBar($api.dom("footer"));
+
+        //状态栏
+        api.setStatusBarStyle({
+            style: 'light'
+        });
+
+
+        initTaBar();
+        //监听登陆
+        listenerLogin();
+        //监听退出登陆
+        listenerSignOut();
+
+        //监听改变tabBar
+        api.addEventListener({
+            name: 'changeIndexTabBar'
+        }, function(ret, err){
+            if( ret ){
+                switch (ret.value.name) {
+                  case "影视":
+                    openCarousel(0);
+                    break;
+                  case "直播":
+                    openCarousel(1);
+                    break;
+                  case "免费看片":
+                    openCarousel(2);
+                    break;
+                  case "我的":
+                    openCarousel(3);
+                    break;
+                  default:
+
+                }
+            }
+        });
+
+
+
+
+    };
+    //打开轮播图广告
+    function openCarousel() {
+        UIScrollPicture.open({
+            rect: {
+                x: 0,
+                y: 44,
+                w: api.winWidth,
+                height:150
+            },
+            data: {
+                paths: ['http://p2.so.qhimg.com/t011d3ccbad92e11237.jpg','widget://image/gogd.jpg'],
+            },
+            styles: {
+                caption: {
+                    height: 35,
+                    color: '#E0FFFF',
+                    size: 13,
+                    bgColor: '#696969',
+                    position: 'bottom'
+                },
+                indicator: {
+                    align: 'center',
+                    color: '#FFFFFF',
+                    activeColor: '#DA70D6'
+                }
+            },
+            placeholderImg: 'widget://image/slide1.jpg',
+            contentMode: 'scaleToFill',
+            interval: 5,
+            loop: true,
+            fixed: false
+        }, function(ret, err) {
+            if (ret.eventType == "click") {
+              if(ret.index==0){
+
+              }
+            }
+        });
+    };
+
+    //底部导航参数
+    var tabBarArr= [
+      {
+        name: 'movies_Win',
+        url: './tabBar/movies_Win.html',
+        title:"木蚁视界"
+      },
+      {
+        name: 'liveBroadCast_Win',
+        url: './tabBar/liveBroadCast_Win.html',
+        title:"直播频道"
+      },
+      {
+        name: 'freeMovies_Win',
+        url: './tabBar/freeMovies_Win.html',
+        title:"抢看大片"
+      },
+      {
+          name: 'my_Win',
+          url: './tabBar/my_Win.html',
+          title:"我的"
+      }
+    ]
+    function openTabBar(index){
+      var currentTabBar;
+      var y=0;
+      //我的页面且未登录
+      if(index==3 && !$api.getToken()){
+          //我的预加载      
+          api.openWin({
+              name: 'login',
+              url: './personal/login.html',
+              animation:{
+                type:"movein",
+                 subType:"from_bottom"
+              }
+          });
+          return false;
+      }else{
+         //已登录
+         //我的页面
+         if(index==3){
+             $api.css($api.dom("header"), 'display:none;');
+             y=0;
+         }else{
+             $api.css($api.dom("header"), 'display:block;');
+             y=$api.offset($api.dom("header")).h;
+         }
+         currentTabBar=tabBarArr[index];
+      }
+      for(var i=tabBarArr.length;i--;i>=0){
+          if(i!=index){
+            api.setFrameAttr({
+                name: tabBarArr[i].name,
+                hidden: true
+            });
+          }
+      }
+      api.openFrame({
+          name:currentTabBar.name ,
+          url: currentTabBar.url,
+          rect: {
+              x: 0,
+              y:y,
+              w: 'auto',
+              h: api.winHeight - $api.offset($api.dom("footer")).h - y
+          },
+          useWKWebView:true,
+          historyGestureEnabled:true,
+          pageParam:{
+             footerH:$api.offset($api.dom("footer")).h
+          }
+      });
+      $api.removeCls($api.dom(".aui-bar-tab-item.aui-active"), 'aui-active');
+      $api.addCls($api.domAll(".aui-bar-tab-item")[index], 'aui-active');
+      $api.html($api.dom("header"),currentTabBar.title);
+    }
+
+    //预加载初始化tababr
+    function initTaBar(){
+        //初始化tabbar
+        for(var i=tabBarArr.length;i--;i>=0){
+            openTabBar(i);
+            if(i!=0){
+              api.setFrameAttr({
+                  name: tabBarArr[i].name,
+                  hidden: true
+              });
+            }
+        }
+    }
+
+
+    //切换tabBar
+    function changeTabBar(index){
+        openTabBar(index);
+    }
+
+    function listenerLogin(){
+      api.addEventListener({
+          name: 'logined'
+      }, function(ret, err){
+          if( ret ){
+              openTabBar(3);
+          }
+      });
+    }
+
+    function listenerSignOut(){
+      api.addEventListener({
+          name: 'signOut'
+      }, function(ret, err){
+          if( ret ){
+            openTabBar(0);
+            api.closeFrame({
+                name: 'my_Win'
+            });
+          }
+      });
+
+    }
+
+</script>
+
+</html>

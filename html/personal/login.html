@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <title>登录</title>
+      <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+      <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+      <style>
+          .input{
+              display: block !important;
+              margin:0 auto 0.56rem auto !important;
+              width: 80vw !important;
+              height:3rem !important;
+          }
+          #login{
+            width:80vw;
+            margin:1rem auto 0 auto;
+          }
+          #list{
+            width:80vw;
+            margin:0 auto;
+          }
+          #list>li:first-child{
+            margin-top:10vw !important;
+          }
+          #list>li>div{
+            height:2.5rem;
+          }
+          .party{
+            font-size: 0;
+            text-align: center;
+            margin-top:2rem;
+          }
+          .party>.item{
+            display: inline-block;
+            text-align: center;
+          }
+          .party>.item>img{
+            display: inline-block;
+            width: 2.5rem;
+            height:2.5rem;
+            margin-bottom:0.3rem;
+          }
+          .party>.item>p{
+            font-size:0.8rem;
+          }
+          #login{
+             width:80vw;
+             margin:5vw auto 0 auto;
+          }
+          #wrap{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+          }
+          .other{
+            width:80vw;
+            margin:0.5rem auto 0 auto;
+          }
+          .other>span{
+              font-size:0.7rem;
+          }
+          .other>span:first-child{
+            float:left;
+          }
+          .other>span:last-child{
+            float:right;
+          }
+      </style>
+  </head>
+  <body>
+       <div id="wrap">
+               <header class="aui-bar aui-bar-nav">
+                 <a class="aui-pull-left aui-btn" tapmode onclick="api.closeWin()">
+                     <span class="aui-iconfont aui-icon-left"></span>
+                 </a>
+                 <div class="aui-title">登陆</div>
+               </header>
+               <form action="">
+                   <ul class="aui-list aui-form-list" id="list">
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-label-icon">
+                                    <i class="aui-iconfont aui-icon-mobile"></i>
+                                </div>
+                                <div class="aui-list-item-input">
+                                    <input id="phone" type="number" placeholder="请输入手机号" maxlength="11">
+                                </div>
+                            </div>
+                        </li>
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-label-icon">
+                                    <i class="aui-iconfont aui-icon-lock"></i>
+                                </div>
+                                <div class="aui-list-item-input">
+                                    <input id="password" type="password" placeholder="请输入密码">
+                                </div>
+                                <!-- <div class="aui-list-item-label-icon">
+                                    <i class="aui-iconfont aui-icon-display"></i>
+                                </div> -->
+                            </div>
+                        </li>
+                    </ul>
+                </form>
+                <div id="login" tapmode onclick="login()"><p class="aui-btn aui-btn-info aui-btn-block">登录</p></div>
+                <div class="other">
+                   <span tapmode onclick="goRegister()">注册账号</span>
+                   <span>忘记密码</span>
+                </div>
+                <div class="aui-hr" style="margin-top:5rem;"></div>
+                <div class="party">
+                    <div class="item" tapmode id="weChatLogin">
+                       <img src="../../image/share/wechat.png" alt="">
+                       <p>微信登录</p>
+                    </div>
+                </div>
+       </div>
+  </body>
+  <script type="text/javascript" src="../../script/api.js"></script>
+  <script type="text/javascript">
+      apiready = function(){
+         $api.fixStatusBar($api.dom("header"));
+         $api.addEvt($api.dom("#weChatLogin"), 'click',function(){weChatLogin()});
+
+      };
+
+
+      function weChatLogin(){
+             $api.weChatLogin(function(code){
+                   api.ajax({
+                       url: $api.getHttp()+"user/info",
+                       method: 'get',
+                       headers:{
+                         userToken:code
+                       }
+                   },function(ret, err){
+                       if (ret) {
+                           if(!ret){
+                             api.toast({
+                                 msg: "登陆失败",
+                                 duration: 2000,
+                                 location: 'middle'
+                             });
+                             return false;
+                           }
+                           if(!ret.mobile){
+                              //首次登陆--需绑定手机号和密码
+                              api.openWin({
+                                  name: 'bindPhonePwd',
+                                  url: './bindPhonePwd.html',
+                                  slidBackEnabled:false
+                              });
+                           }else{
+                              //登陆成功
+                              api.sendEvent({
+                                  name: 'logined',
+                                  extra: {
+                                      userInfo:ret
+                                  }
+                              });
+                              api.closeToWin({
+                                  name: 'wrap'
+                              });
+                           }
+                       } else {
+                          $api.toastNetWorkErr();
+                       }
+                   });
+
+         });
+      }
+
+      function login(){
+          var phone=$api.trim($api.val($api.dom("#phone")));
+          var password=$api.trim($api.val($api.dom("#password")));
+          if(!$api.regPhone(phone)){
+            return false;
+          }
+          $api.openLoading();
+          api.ajax({
+              url: $api.getHttp()+'login/doLogin?account='+phone+"&password="+password,
+              method: 'get',
+          },function(ret, err){
+              if (ret) {
+                  if(!ret.success){
+                    api.toast({
+                        msg: ret.msg,
+                        duration: 2000,
+                        location: 'middle'
+                    });
+                    $api.closeLoading()
+                    return false;
+                  }
+                  $api.setToken(ret.data);            
+                  api.sendEvent({
+                      name: 'logined'
+                  });
+                  api.closeToWin({
+                      name: 'wrap'
+                  });
+
+              } else {
+                  $api.toastNetWorkErr();
+              }
+              $api.closeLoading()
+          });
+
+      }
+
+      function goRegister(){
+        api.openWin({
+            name: 'register',
+            url: './register.html',
+        });
+
+      }
+  </script>
+  </html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <title>title</title>
+      <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+      <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+      <style>
+          form .input{
+            width:80vw !important;
+            height: 2rem !important;
+            vertical-align: middle !important;
+            outline: none !important;
+            border:1px solid #ccc !important;
+            margin: 1rem auto 0 !important;
+            border-radius: 0.5rem !important;
+            font-size: 0.8rem !important;
+            padding:0 0.5rem !important;
+          }
+          #submitBtn{
+            width:80vw;
+            margin:1rem auto 0;
+          }
+      </style>
+  </head>
+  <body>
+    <form>
+        <div>
+          <input id="account" class="input"  placeholder="请输入卡号" type="text"></input>
+          <input id="password" class="input" type="text" placeholder="请输入密码">
+          <div id="submitBtn" class="aui-btn aui-btn-info aui-btn-block" onclick="activation()"  tapmode>提交</div>
+        </div>
+    </form>
+  </body>
+  <script type="text/javascript" src="../../script/api.js"></script>
+  <script type="text/javascript">
+      apiready = function(){
+
+      };
+
+      function activation(){
+        var account=$api.trim($api.val($api.dom("#account")));
+        var password=$api.trim($api.val($api.dom("#password")));
+        if(!$api.getToken()){
+          $api.alertLogin();
+          return false;
+        }
+        if(!account || !password){
+            api.toast({
+                msg: '不能为空',
+                duration: 2000,
+                location: 'middle'
+            });
+           return false;
+        }
+        $api.openLoading();
+        api.ajax({
+            url:  $api.getHttp()+'card/activation',
+            method: 'post',
+            data: {
+                values: {
+                    number: account,
+                    code:password
+                },
+            },
+            headers:$api.getAjaxHeaders()
+        },function(ret, err){
+            if (ret) {
+                if(!ret.success){
+                  api.toast({
+                      msg: ret.msg,
+                      duration: 2000,
+                      location: 'middle'
+                  });
+                  $api.closeLoading();
+                  return false;
+                }
+                api.toast({
+                    msg: '激活成功,您已成功开通',
+                    duration: 2000,
+                    location: 'middle'
+                });
+                setTimeout(function(){
+                  api.sendEvent({
+                      name: 'logined',
+                  });
+                  api.closeWin();
+
+                });
+            } else {
+              $api.toastNetWorkErr();
+            }
+            $api.closeLoading();
+        });
+
+
+      }
+  </script>
+  </html>

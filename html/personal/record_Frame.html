@@ -90,6 +90,7 @@
           },
           created:function(){
             var self=this;
+            //初始化下拉刷新
             api.setRefreshHeaderInfo({
                 visible: true,
                 bgColor: '#fff',
@@ -99,10 +100,34 @@
                 showTime: true
             }, function(ret, err){
                 self.page=1;
-                self.getList(self.page,function(){api.refreshHeaderLoadDone();});
+                self.getList(self.page,function(ret){
+                  self.list=ret.data.list;
+                  self.isLastPage=ret.data.isLastPage;
+                  api.refreshHeaderLoadDone();
+                });
+            });
+            //滚动到底部
+            api.addEventListener({
+                name:'scrolltobottom',
+                extra:{
+                    threshold:0
+                }
+            }, function(ret, err){
+                if(!self.isLastPage){
+                    self.getList(self.page++,function(ret){
+                      self.list.concat(ret.data.list);
+                      self.isLastPage=ret.data.isLastPage;
+                      api.refreshHeaderLoadDone();
+                    });
+                }
             });
 
-            this.getList(this.page);
+
+            //初始化列表
+            this.getList(this.page,function(ret){
+              self.list=ret.data.list;
+              self.isLastPage=ret.data.isLastPage;
+            });
           },
           methods:{
             getList:function(page,callback){
@@ -122,12 +147,10 @@
                     headers:$api.getAjaxHeaders()
                 },function(ret, err){
                     if (ret) {
-                        self.list=ret.data.list;
-                        self.isLastPage=ret.data.isLastPage;
+                        callback(ret);
                     } else {
                         $api.toastNetWorkErr();
                     }
-                    callback && callback();
                 });
 
             }

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <title>title</title>
+      <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+      <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+      <style>
+          .list{
+              padding:0 0.8rem;
+              font-size: 0;
+          }
+          .list>li{
+            margin-top:0.7rem;
+            display: flex;
+            display: -webkit-flex;
+            display: -ms-flex;
+            height: 2.9rem;
+          }
+          .list>li>div{
+            display: inline-block;
+            vertical-align: top;
+            height:100%;
+          }
+          .list>li>div:first-child{
+            width: 5.2rem;
+            margin-right: 0.525rem;
+          }
+          .list>li:first-child>img{
+            display: block;
+            width: 100%;
+            height: 100%;
+          }
+          .list>li>div:last-child{
+            -ms-flex: 1;
+            -webkit-flex: 1;
+            flex: 1;
+            position: relative;
+          }
+          .listText{
+             overflow: hidden;
+             text-overflow: ellipsis;
+             display: -webkit-box;
+             -webkit-line-clamp: 2;
+             -webkit-box-orient: vertical;
+             line-height: 0.95rem;
+          }
+          .platform{
+             position: absolute;
+             left:0;
+             bottom:0.2rem;
+             font-size: 0.55rem;
+             color: #999999;
+          }
+      </style>
+  </head>
+  <body>
+     <div id="app">
+         <ul class="list">
+              <li v-for="i in list" :key="i.id">
+                  <div v-lazy-container="{ selector: 'img'}">
+                     <img  :data-src="i.cover" data-error="../../image/default/recordDefault.png" data-loading="../../image/default/recordDefault.png">
+                  </div>
+                  <div>
+                      <p class="listText">{{i.title}}</p>
+                      <p class="platform">{{i.platform}}</p>
+                  </div>
+              </li>
+         </ul>
+         <!-- 没有观看记录 -->
+         <div v-show="!list && list.length==0">没有数据</div>
+     </div>
+  </body>
+  <script type="text/javascript" src="../../script/api.js"></script>
+  <script type="text/javascript" src="../../script/vue.js"></script>
+  <script type="text/javascript" src="../../script/vueLazyLoad.js"></script>
+  <script type="text/javascript">
+      var vue;
+      Vue.use(VueLazyload);
+      apiready = function(){
+        vue=new Vue({
+          el:"#app",
+          data:function(){
+            return{
+               page:1,
+               list:[],
+               isLastPage:false
+            }
+          },
+          created:function(){
+            var self=this;
+            api.setRefreshHeaderInfo({
+                visible: true,
+                bgColor: '#fff',
+                textColor: '#000',
+                textDown: '下拉刷新...',
+                textUp: '松开刷新...',
+                showTime: true
+            }, function(ret, err){
+                self.page=1;
+                self.getList(self.page,function(){api.refreshHeaderLoadDone();});
+            });
+
+            this.getList(this.page);
+          },
+          methods:{
+            getList:function(page,callback){
+                if(!$api.getToken()){
+                  api.toast({
+                      msg: '请先登陆',
+                      duration: 2000,
+                      location: 'middle'
+                  });
+                  api.closeWin();
+                  return false;
+                }
+                var self=this;
+                api.ajax({
+                    url: $api.getHttp()+'history/my?type=观看&page='+page,
+                    method: 'get',
+                    headers:$api.getAjaxHeaders()
+                },function(ret, err){
+                    if (ret) {
+                        self.list=ret.data.list;
+                        self.isLastPage=ret.data.isLastPage;
+                    } else {
+                        $api.toastNetWorkErr();
+                    }
+                    callback && callback();
+                });
+
+            }
+          }
+        })
+      };
+  </script>
+  </html>

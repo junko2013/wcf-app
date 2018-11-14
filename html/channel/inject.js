@@ -31,7 +31,7 @@ function txInject(progress){
       frameName: 'chennel',
       script: 'function txInject(){'+
          'if(!$){return false;};'+
-         'if(!window.poster){window.poster=$(".poster_pic").attr("src");};'+  //封面
+         'if(!window.poster){window.poster=+$(".poster_pic").attr("src");};'+  //封面
          'if(!window.poster){window.poster=$(".txp_poster")[0].style.backgroundImage.slice(5,-2);};'+
          'if(!window.title){window.title=$(".video_tit.U_color_a").text();}'+ //标题
          //删除播放器

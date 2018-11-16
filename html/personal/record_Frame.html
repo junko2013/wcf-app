@@ -8,22 +8,33 @@
       <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
       <style>
           .list{
-              padding:0 0.8rem;
+              padding:0 0 0 0.8rem;
               font-size: 0;
+              width: 100%;
+              overflow: hidden;
           }
           .list>li{
             margin-top:0.7rem;
+            height: 2.9rem;
+            position: relative;
+            -webkit-transition: all 0.2s;
+            transition: all 0.2s;
+            padding-right: 0.8rem;
+          }
+          .list>li:last-child{
+              margin-bottom:0.7rem;
+          }
+          .list>li>div:first-child{
             display: flex;
             display: -webkit-flex;
             display: -ms-flex;
-            height: 2.9rem;
           }
-          .list>li>div{
+          .listLeft>div,.listRight>div{
             display: inline-block;
             vertical-align: top;
             height:100%;
           }
-          .list>li>div:first-child{
+          .list>li .listLeft{
             width: 5.2rem;
             margin-right: 0.525rem;
           }
@@ -32,7 +43,7 @@
             width: 100%;
             height: 100%;
           }
-          .list>li>div:last-child{
+          .list>li .listRight{
             -ms-flex: 1;
             -webkit-flex: 1;
             flex: 1;
@@ -109,19 +120,44 @@
                     align-items: center;
 
         }
+        .delete{
+           width: 2.9rem;
+           height:2.9rem;
+           background: #ff4949;
+           font-size: 0.8rem;
+           color: #fff;
+           text-align: center;
+           line-height:2.9rem;
+           position: absolute;
+           top:0;
+           right:-2.9rem;
+        }
+        .colllection{
+          display: none;
+        }
+        .list>li[data-type="0"]{
+            transform: translate3d(0,0,0);
+        }
+        .list>li[data-type="1"]{
+            transform: translate3d(-2.9rem,0,0);
+        }
       </style>
   </head>
   <body>
      <div id="app">
          <ul class="list">
-              <li v-for="i in list" :key="i.id">
-                  <div v-lazy-container="{ selector: 'img'}">
-                     <img  :data-src="i.cover" data-error="../../image/default/recordDefault.png" data-loading="../../image/default/recordDefault.png">
+              <li v-for="i in list" :key="i.id" data-type="0">
+                  <div @touchstart.capture="touchStart" @touchend.capture="touchEnd" >
+                      <div class="listLeft" v-lazy-container="{ selector: 'img'}">
+                         <img  :data-src="i.cover" data-error="../../image/default/recordDefault.png" data-loading="../../image/default/recordDefault.png">
+                      </div>
+                      <div class="listRight">
+                          <p class="listText">{{i.title}}</p>
+                          <p class="platform">{{i.platform}}</p>
+                      </div>
                   </div>
-                  <div>
-                      <p class="listText">{{i.title}}</p>
-                      <p class="platform">{{i.platform}}</p>
-                  </div>
+                  <div class="collection">收藏</div>
+                  <div class="delete">删除</div>
               </li>
          </ul>
          <!-- 没有观看记录 -->
@@ -215,7 +251,49 @@
                     }
                 });
 
-            }
+            },
+            //滑动开始
+      			touchStart(e){
+      				this.startX = e.touches[0].clientX;
+      			},
+            //滑动结束
+      			touchEnd(e){
+
+      				let parentElement = e.currentTarget.parentElement;
+      				this.endX = e.changedTouches[0].clientX;
+
+      				if( parentElement.dataset.type == 0 && this.startX - this.endX > 30  ){
+      					this.restSlide();
+      					parentElement.dataset.type = 1;
+      				}
+
+      				if( parentElement.dataset.type == 1 && this.startX - this.endX < -30 ){
+      					this.restSlide();
+      					parentElement.dataset.type = 0;
+      				}
+
+      				this.startX = 0;
+      				this.endX = 0;
+      			},
+            //判断当前是否有滑块处于滑动状态
+            checkSlide(){
+        				let listItems = document.querySelectorAll('.list>li');
+
+        				for( let i = 0 ; i < listItems.length ; i++){
+        					if( listItems[i].dataset.type == 1 ) {
+        						 return true;
+                  }
+        				}
+        				return false;
+            },
+            //一次只能滑动一个
+      			restSlide(){
+      				let listItems = document.querySelectorAll('.list>li');
+
+      				for( let i = 0 ; i < listItems.length ; i++){
+      					listItems[i].dataset.type = 0;
+      				}
+      			},
           }
         })
       };

@@ -38,23 +38,44 @@
       var videoInfo;//{url,title,poster,type,platform}
       apiready = function(){
           $api.fixStatusBar($api.dom("header"));
-            if(!api.pageParam.url){
-              api.toast({
-                  msg: '无播放地址',
-                  duration: 2000,
-                  location: 'middle'
-              });
-              setTimeout(function(){api.closeWin();},2000);
-              return false;
-            }
-            videoInfo={
-              poster:api.pageParam.poster?api.pageParam.poster:"",
-              title:api.pageParam.title?api.pageParam.title:"",
-              url:api.pageParam.url
-            };
-            setTimeout(function(){
-                $api.openPlayer(videoInfo);
-            },100);
+          videoInfo={
+            poster:api.pageParam.poster,
+            title:api.pageParam.title,
+            platform:api.pageParam.platform,
+            pageUrl:api.pageParam.pageUrl
+          };
+          analysis();//解析视频
+          $api.submitHiostory(videoInfo);//提交播放记录
+
+
+
       };
+
+      //解析
+      function analysis(){
+          $api.openLoading();
+          api.ajax({
+              url: 'http://mysj.ngrok.agao88.com?key=347fea4086d249ff422f673563c47a23&target='+api.pageParam.pageUrl,
+              method: 'post',
+              headers:Object.assign($api.getAjaxHeaders(),{accessToken:"347fea4086d249ff422f673563c47a23"})
+          },function(jcret, jcerr){
+              if (jcret) {
+                videoInfo.url=jcret.url;
+                videoInfo.type=jcret.type;
+                $api.openPlayer(videoInfo);
+              } else {
+                  //解析失败
+                  api.toast({
+                      msg: jcerr.msg,
+                      duration: 1500,
+                      location: 'middle'
+                  });
+                  setTimeout(function(){api.closeWin({animation:"none"})},1500);
+              }
+              $api.closeLoading();
+
+          });
+      }
+
   </script>
   </html>

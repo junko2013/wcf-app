@@ -897,9 +897,6 @@
     //打开播放器
     u.openPlayer=function(videoInfo,onlyPlayer){
       var playModule=api.require("playModule");
-      api.setFullScreen({
-          fullScreen: true
-      });
       playModule.init({
         background:videoInfo.poster?videoInfo.poster:"",
         FullScreenViewIsFont:false
@@ -926,9 +923,6 @@
                }else{
                    api.closeWin({aniamtion:"none"})
                }
-               api.setFullScreen({
-                   fullScreen: false
-               });
             }
         });
         playModule.addEventListener({
@@ -939,10 +933,7 @@
                    playModule.cleanPlayers(function(ret, err) {});
                }else{
                    api.closeWin({aniamtion:"none"})
-               }
-              api.setFullScreen({
-                  fullScreen: false
-              });
+               }          
            }
         });
     }

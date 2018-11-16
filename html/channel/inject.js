@@ -30,20 +30,20 @@ function txInject(progress){
   api.execScript({
       frameName: 'chennel',
       script: 'function txInject(){'+
-         'if(!$){return false;};'+
-         'if(!window.poster){window.poster=+$(".poster_pic").attr("src");};'+  //封面
-         'if(!window.poster){window.poster=$(".txp_poster")[0].style.backgroundImage.slice(5,-2);};'+
-         'if(!window.title){window.title=$(".video_tit.U_color_a").text();}'+ //标题
-         //删除播放器
-         'if($("#vip_player").length>0){$("#vip_player").html("<img style='+"position:absolute;width:15vw;height:15vw;top:50%;left:50%;margin-left:-7.5vw;margin-top:-7.5vw;"+' src='+"http://phmbl28h4.bkt.clouddn.com/%E6%92%AD%E6%94%BE.png?e=1542358764&token=KV2kt9gYxcmQKmj82L9BdIEXv7hPosHAP7ZZTh_q:JEpb8T4JG0vQxBN7OFBUnN5aZAA"+' />")};'+
-         'if($("#2016_player").length>0){$("#2016_player").html("<img style='+"position:absolute;width:15vw;height:15vw;top:50%;left:50%;margin-left:-7.5vw;margin-top:-7.5vw;"+' src='+"http://phmbl28h4.bkt.clouddn.com/%E6%92%AD%E6%94%BE.png?e=1542358764&token=KV2kt9gYxcmQKmj82L9BdIEXv7hPosHAP7ZZTh_q:JEpb8T4JG0vQxBN7OFBUnN5aZAA"+' />")};'+
-         '$(".site_player:after").remove();'+
-         'if($("#2016_player")){$("#2016_player").css({background:"black",color:"#fff",textAlign:"center",height:"56.25vw",lineHeight:"56.25vw",fontSize:"5vw"})};'+
-         'if($("#vip_player")){$("#vip_player").css({background:"black",color:"#fff",textAlign:"center",height:"56.25vw",lineHeight:"56.25vw",fontSize:"5vw"})};'+
-         //添加监听
-         'var func=function(){api.sendEvent({name:"play",extra:{poster:window.poster,pageUrl:location.href,title:window.title,platform:"腾讯视频"}});};'+
-         'if($("#vip_player").length>0){$("#vip_player").on("click",func)};'+
-         'if($("#2016_player").length>0){$("#2016_player").on("click",func)};'+
+             'if(!$){return false;};'+
+             'if(!window.poster && $(".poster_pic").length>0){window.poster=$(".poster_pic").attr("src");};'+  //封面
+             'if(!window.poster && $(".txp_poster").length>0){window.poster=$(".txp_poster")[0].style.backgroundImage.slice(5,-2);};'+
+             'if(!window.title){window.title=$(".video_tit.U_color_a").text();}'+ //标题
+             //删除播放器
+             'if($("#vip_player").length>0){$("#vip_player").html("<img style='+"position:absolute;width:15vw;height:15vw;top:50%;left:50%;margin-left:-7.5vw;margin-top:-7.5vw;"+' src='+"http://phmbl28h4.bkt.clouddn.com/%E6%92%AD%E6%94%BE.png?e=1542358764&token=KV2kt9gYxcmQKmj82L9BdIEXv7hPosHAP7ZZTh_q:JEpb8T4JG0vQxBN7OFBUnN5aZAA"+' />")};'+
+             'if($("#2016_player").length>0){$("#2016_player").html("<img style='+"position:absolute;width:15vw;height:15vw;top:50%;left:50%;margin-left:-7.5vw;margin-top:-7.5vw;"+' src='+"http://phmbl28h4.bkt.clouddn.com/%E6%92%AD%E6%94%BE.png?e=1542358764&token=KV2kt9gYxcmQKmj82L9BdIEXv7hPosHAP7ZZTh_q:JEpb8T4JG0vQxBN7OFBUnN5aZAA"+' />")};'+
+             '$(".site_player:after").remove();'+
+             'if($("#2016_player")){$("#2016_player").css({background:"black",color:"#fff",textAlign:"center",height:"56.25vw",lineHeight:"56.25vw",fontSize:"5vw"})};'+
+             'if($("#vip_player")){$("#vip_player").css({background:"black",color:"#fff",textAlign:"center",height:"56.25vw",lineHeight:"56.25vw",fontSize:"5vw"})};'+
+             //添加监听
+             'var func=function(){api.sendEvent({name:"play",extra:{poster:window.poster,pageUrl:location.href,title:window.title,platform:"腾讯视频"}});};'+
+             'if($("#vip_player").length>0){$("#vip_player").on("click",func)};'+
+             'if($("#2016_player").length>0){$("#2016_player").on("click",func)};'+
        '};txInject();'
   });
 }

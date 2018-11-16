@@ -89,15 +89,17 @@
           width: 1.65rem;
           height:0.55rem;
           display: inline-block;
+          vertical-align:middle;
           margin-right: 0.25rem;
         }
         .userType>span{
-          font-size: 0.75rem;
+          font-size: 0.7rem;
           color:#ffa421;
         }
-        .userType>.gmtMemberExpiration{
+        .gmtMemberExpiration{
           color: gray;
           font-size: 0.65rem;
+          text-align: center;
         }
         .btns{
            font-size: 0;
@@ -199,6 +201,7 @@
           border: solid 0.025rem #c6c5ce;
           margin:1rem auto 0 auto;
           text-align: center;
+          font-size: 0.8rem;
         }
         #nav{
           width:100%;
@@ -246,8 +249,8 @@
                            <div class="userType">
                                <img v-if="isVip" src="../../image/my/vip.png" alt="">
                                <span></span>
-                               <p class="gmtMemberExpiration" style="display:none"></p>
                            </div>
+                           <p class="gmtMemberExpiration" style="display:none"></p>
                            <!--卡密-->
                            <div class="btns">
                               <div tapmode onclick="api.openWin({name:'activationVip_Win',url:'../personal/activationVip_Win.html'})">
@@ -261,7 +264,7 @@
                            </div>
                            <!--列表-->
                            <div class="list">
-                               <div class="line aui-border-b" tapmode onclick="api.openWin({name:'record_Win',url:'../personal/record_Win.html'})">
+                               <div class="line aui-border-b" tapmode onclick="api.openWin({name:'record_Win',url:'../personal/record_Win.html',slidBackEnabled:false})">
                                    <img src="../../image/my/record.png" alt="">
                                    <span>观看记录</span>
                                    <img src="../../image/my/arrow.png" alt="">
@@ -324,6 +327,7 @@
 
     function signOut(){
       $api.setToken("");
+      $api.closeLoading();
       api.sendEvent({
           name: 'signOut'
       });
@@ -341,8 +345,8 @@
           //按钮颜色
           var w=api.winWidth;
           //nav渐变
-          if(this.y<0 && Math.abs(this.y)<=0.28*w){
-              var opacity=Math.abs(this.y)/(0.28*w);
+          if(this.y<0 && Math.abs(this.y)<=0.25*w){
+              var opacity=Math.abs(this.y)/(0.25*w);
               $api.css($api.dom("#nav"), 'display:block;opacity:'+opacity+";");
           }else{
               $api.css($api.dom("#nav"), 'display:block;opacity:1;');
@@ -352,7 +356,7 @@
           }
 
           //样式
-          if(this.y<0 && Math.abs(this.y)>0.28*w){
+          if(this.y<0 && Math.abs(this.y)>0.25*w){
              //滚动到下方
              $api.attr($api.dom("#setting"), 'src', '../../image/my/setting_b.png');
              $api.attr($api.dom("#share"), 'src', '../../image/my/share_b.png');
@@ -379,18 +383,14 @@
           },function(ret, err){
               if(err){
                 $api.toastNetWorkErr(function(){
-                   self.signOut();
+                   signOut();
                 });
                 return false;
               }
               if (ret) {
                   if(!ret.mobile){
                      //登陆--需校验绑定手机号和密码
-                     api.openWin({
-                         name: 'bindPhonePwd',
-                         url: 'widget://html/personal/bindPhonePwd.html',
-                         slidBackEnabled:false
-                     });
+                     signOut();
                      return true;
                    }
                   //头像
@@ -412,8 +412,8 @@
                 if(ret.data.isMember){
                     $api.html($api.dom(".userType>span"), '尊贵会员');
                     $api.css($api.dom(".userType>img"), 'display:inline-block;');
-                    $api.css($api.dom(".userType>.gmtMemberExpiration"), 'display:block;');
-                    $api.html($api.dom(".userType>.gmtMemberExpiration"), "到期："+ret.data.gmtMemberExpiration);
+                    $api.css($api.dom(".gmtMemberExpiration"), 'display:block;');
+                    $api.html($api.dom(".gmtMemberExpiration"), "到期："+ret.data.gmtMemberExpiration);
                 }else{
                     $api.html($api.dom(".userType>span"), '开通会员，看全网Vip视频');
                     $api.css($api.dom(".userType>span"), 'color:gray');

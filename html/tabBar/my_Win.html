@@ -374,19 +374,19 @@
           },function(ret, err){
               if(err){
                 $api.toastNetWorkErr(function(){
-                   self.signOut();
+                    signOut();
                 });
                 return false;
               }
               if (ret) {
                   if(!ret.mobile){
                      //登陆--需校验绑定手机号和密码
-                     api.openWin({
-                         name: 'bindPhonePwd',
-                         url: 'widget://html/personal/bindPhonePwd.html',
-                         slidBackEnabled:false
+                     api.sendEvent({
+                         name: 'signOut',
                      });
-                     return true;
+                     signOut();
+
+                     return false;
                    }
                   //头像
                   if(ret.headImg){

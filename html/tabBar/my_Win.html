@@ -1,0 +1,433 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <style type="text/css">
+        .text-white {
+            color: #ffffff !important;
+        }
+        #app{
+          position:fixed;
+          top:0;
+          left:0;
+          width:100%;
+          height:100%;
+          overflow: hidden;
+        }
+        .wrapper{
+          position: absolute;
+          top:39vw;
+          left:0;
+          width:100%;
+          height:calc(100vh - 39vw);
+          z-index: 20;
+        }
+        .bg{
+          width:100%;
+        	height:50vh;
+        	background-image: linear-gradient(250deg,
+        		#21d4fd 0%,
+        		#b721ff 100%),
+        	linear-gradient(
+        		#f0f2f5,
+        		#f0f2f5);
+        	background-blend-mode: normal,
+        		normal;
+        	opacity: 0.9;
+          position: absolute;
+          top:0;
+          left:0;
+          z-index: 10;
+          transition:all 0.3s ease;
+          z-index: 5;
+        }
+        .headImgBg{
+          position: absolute;
+          left:0;
+          top:0;
+          width: 100%;
+        	height: 42.665vw;
+        }
+        #area{
+          border-top-left-radius: 0.75rem;
+          border-top-right-radius: 0.75rem;
+          background: #fff;
+          min-height:100vh;
+        }
+        #area:before{
+          content:"";
+          display: table;
+        }
+        .headImg{
+          width: 4rem;
+          height: 4rem;
+          background: #f5f5f5;
+          box-shadow: 0 0.25rem 0.5rem  0 rgba(0,0,0,0.2);
+          border-radius: 999rem;
+          position: absolute;
+          top:-2rem;
+          left:50%;
+          margin-left:-2rem;
+          overflow: hidden;
+        }
+        #name{
+            font-size: 0.9rem;
+            color:#1a1a1a;
+            text-align: center;
+            margin-top:2.5rem;
+        }
+        .userType{
+          font-size: 0;
+          text-align: center;
+        }
+        .userType>img{
+          width: 1.65rem;
+          height:0.55rem;
+          display: inline-block;
+          margin-right: 0.25rem;
+        }
+        .userType>span{
+          font-size: 0.75rem;
+          color:#ffa421;
+        }
+        .userType>.gmtMemberExpiration{
+          color: gray;
+          font-size: 0.65rem;
+        }
+        .btns{
+           font-size: 0;
+           text-align: center;
+           margin-top:2rem;
+        }
+        .btns>div{
+          display: inline-block;
+          vertical-align: top;
+          font-size: 0;
+          text-align:left;
+        }
+        .btns>div:first-child{
+          width: 7.5rem;
+        	height: 2.5rem;
+        	background-color: #ac1ff0;
+        	border-radius: 1.25rem;
+          margin-right: 1rem;
+          box-shadow: 0rem 0.25rem 0.75rem 0rem
+        		rgba(183, 33, 255, 0.6);
+        }
+        .btns>div:last-child{
+          width: 7.5rem;
+        	height: 2.5rem;
+          line-height: 2.5rem;
+        	background-color: #1fb6ee;
+        	border-radius: 1.25rem;
+          box-shadow: 0rem 0.25rem 0.75rem 0rem
+            rgba(33,193,253, 0.6);
+        }
+        .btns>div>img{
+          width: 2rem;
+          height:2rem;
+          display: inline-block;
+          vertical-align: top;
+          margin-top: 0.25rem;
+          margin-right: 0.5rem;
+          margin-left: 0.25rem;
+        }
+        .btns>div>span{
+          font-size: 0.9rem;
+          line-height: 2.5rem;
+        	color: #fff;
+          display: inline-block;
+          vertical-align:top;
+        }
+        .list{
+          padding-left:0.825rem;
+          margin-top: 1.5rem;
+        }
+        .line{
+            height:2.75rem;
+            line-height: 2.75rem;
+            width: 100%;
+            position: relative;
+            font-size: 0;
+        }
+        .line>img:first-child{
+          width: 1.05rem;
+          height: 1.05rem;
+          display: inline-block;
+          vertical-align: top;
+          margin-top:0.85rem;
+          margin-right: 0.55rem;
+        }
+        .line>span{
+          font-size: 0.8rem;
+          color:#000;
+          vertical-align: middle;
+        }
+        .line>img:last-child{
+          width: 0.8rem;
+          height:0.8rem;
+          position: absolute;
+          top:0.975rem;
+          right:0.775rem;
+        }
+        #setting{
+          position:fixed;
+          left:0.8rem;
+          top:1.55rem;
+          z-index:99;
+          width: 1.05rem;
+          height:1.05rem;
+        }
+        #share{
+          position:fixed;
+          right:0.8rem;
+          top:1.55rem;
+          z-index:99;
+          width: 1.05rem;
+          height:1.05rem;
+        }
+        .signOutBtn{
+          width:94.6vw;
+          height:2.2rem;
+          line-height: 2.2rem;
+          border-radius: 999rem;
+          border: solid 0.025rem #c6c5ce;
+          margin:1rem auto 0 auto;
+          text-align: center;
+        }
+        #nav{
+          width:100%;
+          height:3.2rem;
+          line-height: 3.2rem;
+          position: fixed;
+          top:0;
+          left:0;
+          display: none;
+          opacity:0;
+          z-index:90;
+          background:#fff;
+        }
+        #nav>img{
+           border-radius: 999rem;
+           width:1.5rem;
+           height:1.5rem;
+           display: block;
+           margin:1.35rem auto 0;
+           box-shadow: 0 0.25rem 0.5rem  0 rgba(0,0,0,0.2);
+        }
+
+    </style>
+</head>
+<body>
+   <div id="app">
+         <div class="bg"></div>
+         <img id="setting" src="../../image/my/setting.png" alt="">
+         <img id="share" src="../../image/my/share.png" alt="">
+         <div id="nav">
+            <img src="../../image/my/userDefault.png" alt="">
+         </div>
+         <!--人物背景,未用-->
+         <div class="headImgBg"></div>
+         <div class="wrapper">
+            <div class="content">
+                    <div id="area">
+                           <!--头像-->
+                           <div class="headImg">
+                                <img src="../../image/my/userDefault.png">
+                           </div>
+                           <!-- 名字-->
+                           <p id="name"></p>
+                           <!-- 类型-->
+                           <div class="userType">
+                               <img v-if="isVip" src="../../image/my/vip.png" alt="">
+                               <span></span>
+                               <p class="gmtMemberExpiration" style="display:none"></p>
+                           </div>
+                           <!--卡密-->
+                           <div class="btns">
+                              <div tapmode onclick="api.openWin({name:'activationVip_Win',url:'../personal/activationVip_Win.html'})">
+                                 <img src="../../image/my/card.png">
+                                 <span>密卡激活</span>
+                              </div>
+                              <div tapmode onclick="api.openWin({  name:'live_Win',url:'../live/live_Win.html',pageParam:{url:'http://t.cn/EAVo5OT',type:'木蚁视界vip充值'}});">
+                                 <img src="../../image/my/recharge.png" alt="">
+                                 <span>会员充值</span>
+                              </div>
+                           </div>
+                           <!--列表-->
+                           <div class="list">
+                               <div class="line aui-border-b" tapmode onclick="api.openWin({name:'record_Win',url:'../personal/record_Win.html'})">
+                                   <img src="../../image/my/record.png" alt="">
+                                   <span>观看记录</span>
+                                   <img src="../../image/my/arrow.png" alt="">
+                               </div>
+                               <div class="line aui-border-b">
+                                   <img src="../../image/my/collection.png" alt="">
+                                   <span>我的收藏</span>
+                                   <img src="../../image/my/arrow.png" alt="">
+                               </div>
+                               <div class="line aui-border-b">
+                                   <img src="../../image/my/daili.png" alt="">
+                                   <span>代理中心</span>
+                                   <img src="../../image/my/arrow.png" alt="">
+                               </div>
+                               <div class="line aui-border-b" tapmode onclick="api.openWin({  name:'live_Win',url:'../live/live_Win.html',pageParam:{url:'http://u.agao88.com/help',type:'常见问题'}});">
+                                   <img src="../../image/my/problem.png" alt="">
+                                   <span>常见问题</span>
+                                   <img src="../../image/my/arrow.png" alt="">
+                               </div>
+                               <div class="line aui-border-b" tapmode onclick="api.openWin({  name:'live_Win',url:'../live/live_Win.html',pageParam:{url:'http://u.agao88.com/feedback',type:'意见反馈'}});">
+                                   <img src="../../image/my/opinion.png" alt="">
+                                   <span>意见反馈</span>
+                                   <img src="../../image/my/arrow.png" alt="">
+                               </div>
+                               <div class="line aui-border-b" tapmode onclick="api.openWin({  name:'live_Win',url:'../live/live_Win.html',pageParam:{url:'http://u.agao88.com/aboutus',type:'关于我们'}});">
+                                   <img src="../../image/my/about.png" alt="">
+                                   <span>关于我们</span>
+                                   <img src="../../image/my/arrow.png" alt="">
+                               </div>
+                           </div>
+                           <!--  -->
+                           <div class="signOutBtn" tapmode onclick="signOut()">退出登录</div>
+                    </div>
+              </div>
+
+         </div>
+   </div>
+</body>
+<script type="text/javascript" src="../../script/api.js" ></script>
+<script type="text/javascript" src="../../script/bscroll.js" ></script>
+<script type="text/javascript">
+    var myScroll;
+    apiready = function () {
+          api.addEventListener({
+              name: 'logined'
+          }, function(ret, err){
+              if( ret ){
+                  getUserInfo();
+              }
+          });
+          if($api.getToken()){
+             getUserInfo();
+          }
+
+
+
+
+    }
+
+
+    function signOut(){
+      $api.setToken("");
+      api.sendEvent({
+          name: 'signOut'
+      });
+    }
+    function initScroll(){
+      myScroll=new BScroll(".wrapper",{
+        probeType:2
+      });
+      myScroll.on("scroll",function(){
+          var y=-this.y;
+          var el=$api.dom(".bg");
+          var newScale=this.y/100+1;
+          newScale<=1 && (newScale=1);
+          $api.css(el,'transform:scale3d('+newScale+','+newScale+','+newScale+')');
+          //按钮颜色
+          var w=api.winWidth;
+          //nav渐变
+          if(this.y<0 && Math.abs(this.y)<=0.28*w){
+              var opacity=Math.abs(this.y)/(0.28*w);
+              $api.css($api.dom("#nav"), 'display:block;opacity:'+opacity+";");
+          }else{
+              $api.css($api.dom("#nav"), 'display:block;opacity:1;');
+          }
+          if(this.y>0){
+              $api.css($api.dom("#nav"), 'display:none;opacity:0;');
+          }
+
+          //样式
+          if(this.y<0 && Math.abs(this.y)>0.28*w){
+             //滚动到下方
+             $api.attr($api.dom("#setting"), 'src', '../../image/my/setting_b.png');
+             $api.attr($api.dom("#share"), 'src', '../../image/my/share_b.png');
+             api.setStatusBarStyle({
+                style: 'dark'
+             });
+          }else{
+             $api.attr($api.dom("#setting"), 'src', '../../image/my/setting.png');
+             $api.attr($api.dom("#share"), 'src', '../../image/my/share.png');
+             api.setStatusBarStyle({
+                style: 'light'
+             });
+          }
+      })
+    }
+
+
+
+    function getUserInfo(){
+          api.ajax({
+              url: $api.getHttp()+'user/info',
+              method: 'get',
+              headers:$api.getAjaxHeaders()
+          },function(ret, err){
+              if(err){
+                $api.toastNetWorkErr(function(){
+                   self.signOut();
+                });
+                return false;
+              }
+              if (ret) {
+                  if(!ret.mobile){
+                     //登陆--需校验绑定手机号和密码
+                     api.openWin({
+                         name: 'bindPhonePwd',
+                         url: 'widget://html/personal/bindPhonePwd.html',
+                         slidBackEnabled:false
+                     });
+                     return true;
+                   }
+                  //头像
+                  if(ret.headImg){
+                      $api.attr($api.dom(".headImg>img"), 'src', ret.headImg);
+                      $api.attr($api.dom("#nav>img"), 'src', ret.headImg);
+                  }else{
+                      $api.attr($api.dom(".headImg>img"), 'src', "../../image/my/userDefault.png");
+                      $api.attr($api.dom("#nav>img"), 'src', "../../image/my/userDefault.png");
+                  }
+                  //名字
+                  $api.html($api.dom("#name"),ret.nickname);
+              }
+              initScroll();
+          });
+          //获取是否会员信息
+          $api.getMemberInfo(function(ret,err){
+              if (ret && ret.success) {
+                if(ret.data.isMember){
+                    $api.html($api.dom(".userType>span"), '尊贵会员');
+                    $api.css($api.dom(".userType>img"), 'display:inline-block;');
+                    $api.css($api.dom(".userType>.gmtMemberExpiration"), 'display:block;');
+                    $api.html($api.dom(".userType>.gmtMemberExpiration"), "到期："+ret.data.gmtMemberExpiration);
+                }else{
+                    $api.html($api.dom(".userType>span"), '开通会员，看全网Vip视频');
+                    $api.css($api.dom(".userType>span"), 'color:gray');
+                    $api.css($api.dom(".userType>img"), 'display:none;');
+                }
+              }
+              initScroll();
+          });
+    }
+
+
+
+
+
+
+</script>
+</html>

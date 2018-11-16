@@ -50,11 +50,29 @@
         .aui-bar-tab .aui-active{
           color:#231d41 !important;
         }
+        .bg{
+          width:100%;
+        	background-image: linear-gradient(250deg,
+        		#21d4fd 0%,
+        		#b721ff 100%),
+        	linear-gradient(
+        		#f0f2f5,
+        		#f0f2f5);
+        	background-blend-mode: normal,
+        		normal;
+        	opacity: 0.9;
+          position: absolute;
+          top:0;
+          left:0;
+          z-index: 10;
+          transition:all 0.3s ease;
+          z-index: 5;
+        }
     </style>
 </head>
 
 <body>
-    <header class="aui-bar aui-bar-nav">木蚁视界</header>
+    <header class="aui-bar aui-bar-nav bg">木蚁视界</header>
     <footer class="aui-bar aui-bar-tab">
         <div class="movie aui-bar-tab-item aui-active" tapmode onclick="changeTabBar(0)">
             <i class="tabIcon"></i>
@@ -192,7 +210,7 @@
       var y=0;
       //我的页面且未登录
       if(index==3 && !$api.getToken()){
-          //我的预加载      
+          //我的预加载
           api.openWin({
               name: 'login',
               url: './personal/login.html',

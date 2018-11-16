@@ -7,12 +7,28 @@
       <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
       <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
       <style>
-
+      .bg{
+        width:100%;
+        background-image: linear-gradient(250deg,
+          #21d4fd 0%,
+          #b721ff 100%),
+        linear-gradient(
+          #f0f2f5,
+          #f0f2f5);
+        background-blend-mode: normal,
+          normal;
+        opacity: 0.9;
+        position: absolute;
+        top:0;
+        left:0;
+        z-index: 10;
+        transition:all 0.3s ease;
+        z-index: 5;
+      }
       </style>
   </head>
   <body>
-
-    <header class="aui-bar aui-bar-nav">
+    <header class="aui-bar aui-bar-nav bg">
         <a class="aui-pull-left aui-btn" onclick="back()" tapmode>
             <span class="aui-iconfont aui-icon-left"></span>
             <span>返回</span>
@@ -33,7 +49,7 @@
            wx = api.require('wx');
 
            type=api.pageParam.type;
-           type &&($api.html($api.dom("#title"),type));
+           type &&($api.html($api.dom("#title"),"点此关闭回到首页"));
            listenerPlay();
 
            switch (type) {
@@ -49,11 +65,11 @@
               case "优酷":
                 openChennel("https://www.youku.com/");
                 break;
-              case "1905Vip影院":
+              case "1905":
                 openChennel("http://vip.1905.com/");
                 break;
               case "乐视视频":
-                openChennel("http://m.le.com/");
+                openChennel("http://m.le.com/vip");
                 break;
               case "搜狐视频":
                 openChennel("https://m.tv.sohu.com/film");
@@ -152,7 +168,7 @@
           url:url,
           rect: {
               x: 0,
-              y: $api.offset($api.dom("header")).h,
+              y: $api.offset($api.dom("header")).h+20,
               w: "auto",
               h: "auto"
           },
@@ -188,7 +204,7 @@
                case "咪咕视频" :
                  miGuInject(ret.progress);
                  break;
-               case "1905Vip影院":
+               case "1905":
                  yijiulinwuInject(ret.progress);
                  break;
                case "华数TV":
